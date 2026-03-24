@@ -46,27 +46,9 @@ The Debug Engine runs inside the storefront and exposes:
 - Empty section detection
 
 ### Logic Signals
-- Sale logic
-- Template mismatch
-- Data presence checks
+COMING SOON
 
 ---
-
-## Debug Engine (Key Feature)
-
-Instead of just showing data, it detects issues:
-
-Examples:
-
-- ⚠ Missing metafield used in UI  
-- ⚠ Variant unavailable but button active  
-- ⚠ Empty section after merchant edit  
-- ⚠ Template and object mismatch  
-
-This turns debugging from guessing into visibility.
-
----
-
 ## Installation
 
 1. Add snippets:
@@ -92,6 +74,32 @@ Open any page and add:
 The dashboard will appear in the bottom-right corner showing live store data and issues.
 
 ---
+## Learn More
+
+
+For a deeper breakdown of the approach and patterns:
+
+👉 [https://www.linkedin.com/pulse/shopify-theme-debugging-2](https://www.linkedin.com/posts/activity-7441521093489692672-g46P?utm_source=share&utm_medium=member_desktop&rcm=ACoAABox1gsBoQ0sTWNME0hbr8qOwoj87ME6-BE) 
+
+👉 [https://www.linkedin.com/pulse/shopify-theme-debugging](https://www.linkedin.com/posts/activity-7437881869263851521-ikiI?utm_source=share&utm_medium=member_desktop&rcm=ACoAABox1gsBoQ0sTWNME0hbr8qOwoj87ME6-BE) 
+
+---
+
+## Debug Engine (Key Feature)
+
+Instead of just showing data, it detects issues:
+
+Examples:
+
+- ⚠ Missing metafield used in UI  
+- ⚠ Variant unavailable but button active  
+- ⚠ Empty section after merchant edit  
+- ⚠ Template and object mismatch  
+
+This turns debugging from guessing into visibility.
+
+---
+
 
 ## Safety
 
