@@ -1,0 +1,316 @@
+{% comment %}
+  Shopify Debug Engine - Dev Dashboard
+
+  Purpose:
+  Renders a lightweight debugging panel inside the storefront to inspect
+  runtime data such as context, product, cart, metafields, metaobjects,
+  sections, and logic conditions.
+
+  Usage:
+  - Enable using: ?debug=1
+  - Visible only in design mode or editor mode
+
+  Author:
+  Arun / https://github.com/arunphp29/shopify-debug-engine
+{% endcomment %}
+
+<style>
+#dev-dashboard {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 360px;
+  max-height: 80vh;
+  background: #0f172a;
+  color: #e5e7eb;
+  font: 13px monospace;
+  border-radius: 10px;
+  z-index: 99999;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* Header */
+#dev-header {
+  padding: 10px;
+  background: #1e293b;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Tabs */
+.dev-tabs {
+  display: flex;
+  border-bottom: 1px solid #334155;
+}
+
+.dev-tab {
+  flex: 1;
+  text-align: center;
+  padding: 6px;
+  cursor: pointer;
+  background: #0f172a;
+}
+
+.dev-tab.active {
+  background: #1e293b;
+}
+
+/* Content */
+.dev-content {
+  display: none;
+  padding: 10px;
+  overflow-y: auto;
+  max-height: 60vh;
+  line-height:25px;
+  
+}
+
+.dev-content.active {
+  display: block;
+}
+.dev-block summary{list-style: disclosure-closed;}
+.dev-block {
+  margin-bottom: 8px;
+  border-top: 1px solid #334155;
+  padding: 15px;
+}
+
+/* Filter */
+#dev-filter {
+  width: 100%;
+  padding: 4px;
+  margin-bottom: 6px;
+  background: #020617;
+  color: #fff;
+  border: none;
+}
+</style>
+
+
+<div id="dev-dashboard" style="display:none;">
+
+  <div id="dev-header">Shopify Debug</div>
+
+  <!-- Tabs -->
+  <div class="dev-tabs">
+    <div class="dev-tab active" data-tab="context">Context</div>
+    <div class="dev-tab" data-tab="product">Product</div>
+    <div class="dev-tab" data-tab="meta">Meta</div>
+    <div class="dev-tab" data-tab="layout">Layout</div>
+  </div>
+
+  <!-- Filter -->
+  <input id="dev-filter" placeholder="Filter..." />
+
+  <!-- Context -->
+  <div class="dev-content active" id="context">
+    <div class="dev-block">
+      Page: {{ request.page_type }}<br>
+Template: {{ template.name }}<br>
+Product: {{ product != blank }}<br>
+Collection: {{ collection != blank }}<br>
+Customer: {{ customer != blank }}<br>
+Path: {{ request.path }}<br>
+
+    </div>
+  </div>
+
+  <!-- Product -->
+  <div class="dev-content" id="product">
+
+    {% if product %}
+    <div class="dev-block">
+      Title:{{ product.title }}<br>
+      ID: {{ product.id }}<br>
+      Variants: {{ product.variants.size }}<br>
+      Available: {{ product.available }}<br>
+       Price: {{ product.price | money }}<br>
+Compare At: {{ product.compare_at_price | money }}<br>
+<strong>Variants</strong>
+
+{% for v in product.variants %}
+<div>
+{{ v.id }} |
+{{ v.title }} |
+Available: {{ v.available }} |
+Price: {{ v.price | money }}
+</div>
+{% endfor %}
+<details>
+<summary>Product Object</summary>
+<pre>{{ product | json }}</pre>
+</details>
+
+
+    </div>
+    {% endif %}
+
+    <div class="dev-block">
+      Cart: {{ cart.item_count }} items<br>
+      Total: {{ cart.total_price | money }}
+<details>
+<summary>Cart Object</summary>
+<pre>{{ cart | json }}</pre>
+</details>
+
+    </div>
+
+  </div>
+
+  <!-- Meta -->
+  <div class="dev-content" id="meta">
+
+    {% if product and product.metafields.custom %}
+    <div class="dev-block">
+      <strong>Metafields</strong>
+
+      {% for field in product.metafields.custom %}
+        {% assign meta = field[1] %}
+        <div class="dev-item">
+          {{ field[0] }} :
+
+          {% if meta.type == 'dimension' %}
+            {{ meta.value }} {{ meta.unit }}
+          {% elsif meta.type contains 'reference' %}
+            {{ meta.value.title }}
+          {% else %}
+            {{ meta.value }}
+          {% endif %}
+        </div>
+      {% endfor %}
+      
+    </div>
+    {% endif %}
+
+{% if product %}{% assign resources =  "product" %}{% endif %}
+{% if collection %}{% assign resources = "collection" %}{% endif %}
+{% if customer %}{% assign resources = "customer" %}{% endif %}
+
+<div class="dev-block">
+  <strong>Metafields</strong>
+{{ resources }}
+  {% for res in resources %}
+
+    {% assign obj = nil %}
+
+    {% if res == "product" %}{% assign obj = product %}{% endif %}
+    {% if res == "collection" %}{% assign obj = collection %}{% endif %}
+    {% if res == "customer" %}{% assign obj = customer %}{% endif %}
+    {% if res == "shop" %}{% assign obj = shop %}{% endif %}
+
+    {% if obj.metafields.custom %}
+      <div style="margin-top:6px;">
+        <strong>{{ res }}</strong>
+
+        {% for field in obj.metafields.custom %}
+          {% assign meta = field[1] %}
+
+          <div class="dev-item">
+            {{ field[0] }} :
+
+            {% if meta.type == 'dimension' %}
+              {{ meta.value }} {{ meta.unit }}
+            {% elsif meta.type contains 'reference' %}
+              {{ meta.value.title }}
+            {% else %}
+              {{ meta.value }}
+            {% endif %}
+
+            <span style="opacity:.6;">({{ meta.type }})</span>
+          </div>
+
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  {% endfor %}
+</div>
+    {% if metaobjects %}
+    <div class="dev-block">
+      <strong>Metaobjects</strong>
+
+      {% for obj in metaobjects %}
+        <div class="dev-item">{{ obj[0] }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Layout -->
+  <div class="dev-content" id="layout">
+
+    {% if section %}
+    <div class="dev-block">
+      <strong>Blocks</strong>
+
+      {% for block in section.blocks %}
+        <div class="dev-item">
+          {{ block.type }} | {{ block.id }}|   Disabled: {{ block.disabled }}
+
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if product %}
+    <div class="dev-block">
+      <strong>Logic</strong>
+
+      {% assign on_sale = product.compare_at_price > product.price %}
+
+      on_sale: {{ on_sale }}<br>
+      has_description: {{ product.description != blank }}
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+  // Toggle panel
+  document.getElementById("dev-header").onclick = function(){
+    var contents = document.querySelectorAll(".dev-content");
+    contents.forEach(c => c.style.display = 
+      c.style.display === "none" ? "block" : "none"
+    );
+  };
+
+  // Tabs
+  document.querySelectorAll(".dev-tab").forEach(tab => {
+    tab.onclick = function(){
+      document.querySelectorAll(".dev-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".dev-content").forEach(c => c.classList.remove("active"));
+
+      tab.classList.add("active");
+      document.getElementById(tab.dataset.tab).classList.add("active");
+    };
+  });
+
+  // Filter
+  document.getElementById("dev-filter").onkeyup = function(){
+    let val = this.value.toLowerCase();
+    document.querySelectorAll(".dev-item").forEach(el => {
+      el.style.display = el.innerText.toLowerCase().includes(val) ? "block" : "none";
+    });
+  };
+
+});
+
+  (function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    // Check if ?debug=1 exists or if we are in the Shopify Theme Editor
+    const isDebug = urlParams.get('debug') === '1';
+    const isEditor = window.Shopify && window.Shopify.designMode;
+
+    if (isDebug || isEditor) {
+      document.getElementById('dev-dashboard').style.display = 'block';
+      const el = document.getElementById("dev-dashboard");
+    el.style.display = "block";
+    }
+  })();
+</script>
