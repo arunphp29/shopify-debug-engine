@@ -7,7 +7,6 @@ Lightweight Shopify Debug Dashboard for storefront debugging
 A lightweight, production-safe debugging dashboard for Shopify themes — built to inspect real storefront state without switching to admin.
 
 ---
-
 ![Preview](./Screenshotp.png)
 ---
 ## Why this exists
