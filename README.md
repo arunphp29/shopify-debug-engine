@@ -84,7 +84,8 @@ For a deeper breakdown of the approach and patterns:
 👉 [https://www.linkedin.com/pulse/shopify-theme-debugging](https://www.linkedin.com/posts/activity-7437881869263851521-ikiI?utm_source=share&utm_medium=member_desktop&rcm=ACoAABox1gsBoQ0sTWNME0hbr8qOwoj87ME6-BE) 
 
 ---
-
+![Preview](./Screenshotp.png)
+---
 ## Debug Engine (Key Feature)
 
 Instead of just showing data, it detects issues:
@@ -119,13 +120,7 @@ This turns debugging from guessing into visibility.
 
 ---
 
-## Philosophy
 
-Most Shopify issues are not errors — they are state problems.
-
-This tool helps you see that state clearly.
-
----
 
 ## Future Improvements
 
